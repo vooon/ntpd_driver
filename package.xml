@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>ros2ntpd</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>ros2ntpd sends TimeReference message time to ntpd server</description>
 
   <maintainer email="vooon341@gmail.com">Vladimir Ermakov</maintainer>
