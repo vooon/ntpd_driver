@@ -23,8 +23,7 @@
 #include <cstring>
 #include <cerrno>
 
-/** SHM structure (see ntpd shm driver documentation)
- */
+/** the definition of shmTime is from ntpd source ntpd/refclock_shm.c */
 struct shmTime
 {
 	int mode;	/* 0 - if valid set
@@ -35,7 +34,7 @@ struct shmTime
 			 *         use values
 			 *       clear valid
 			 */
-	int count;
+	volatile int count;
 	time_t clockTimeStampSec;
 	int clockTimeStampUSec;
 	time_t receiveTimeStampSec;
@@ -43,8 +42,10 @@ struct shmTime
 	int leap;
 	int precision;
 	int nsamples;
-	int valid;
-	int pad[10];
+	volatile int valid;
+	unsigned        clockTimeStampNSec;     /* Unsigned ns timestamps */
+	unsigned        receiveTimeStampNSec;   /* Unsigned ns timestamps */
+	int             dummy[8];
 };
 
 const long int NTPD_SHM_BASE = 0x4e545030;
@@ -75,9 +76,6 @@ static volatile struct shmTime *get_shmTime(int unit)
 		ROS_FATAL("SHM shmat(%d, 0, 0) fail: %s", shmid, strerror(errno));
 		return NULL;
 	}
-
-	/* clear shm before use */
-	memset(p, 0, sizeof(shmTime));
 
 	ROS_INFO("SHM(%d) key 0x%08lx, successfully opened",
 			unit, NTPD_SHM_BASE + unit);
@@ -115,7 +113,7 @@ static void time_ref_cb(const sensor_msgs::TimeReference::ConstPtr &time_ref)
 
 	/* header */
 	g_shm->mode = 1;
-	g_shm->leap = 0x3;	// LEAP_NOTINSYNC
+	g_shm->leap = 0;	// LEAP_NOWARNING
 	g_shm->precision = -1;	// initially 0.5 sec
 	g_shm->nsamples = 3;	// stages of median filter
 
@@ -124,11 +122,17 @@ static void time_ref_cb(const sensor_msgs::TimeReference::ConstPtr &time_ref)
 	g_shm->count += 1;
 	g_shm->receiveTimeStampSec = time_ref->header.stamp.sec;
 	g_shm->receiveTimeStampUSec = time_ref->header.stamp.nsec / 1000;
+	g_shm->receiveTimeStampNSec = time_ref->header.stamp.nsec;
 	g_shm->clockTimeStampSec = time_ref->time_ref.sec;
 	g_shm->clockTimeStampUSec = time_ref->time_ref.nsec / 1000;
+	g_shm->clockTimeStampNSec = time_ref->time_ref.nsec;
 	/* barrier again */
 	g_shm->count += 1;
 	g_shm->valid = 1;
+
+	ROS_DEBUG_THROTTLE(10, "Got time_ref: %lu.%09lu",
+			(long unsigned) time_ref->time_ref.sec,
+			(long unsigned) time_ref->time_ref.nsec);
 }
 
 int main(int argc, char *argv[])
