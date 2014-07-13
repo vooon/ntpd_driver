@@ -1,6 +1,12 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package ros2ntpd
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package ntpd_driver
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1.0.1 (2014-07-13)
+------------------
+* Rename package from ros2ntpd to ntpd_driver
+  Add notes for chrony.
+* Contributors: Vladimir Ermakov
 
 1.0.0 (2014-06-28)
 ------------------
