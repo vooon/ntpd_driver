@@ -137,7 +137,7 @@ static void time_ref_cb(const sensor_msgs::TimeReference::ConstPtr &time_ref)
 
 int main(int argc, char *argv[])
 {
-	ros::init(argc, argv, "ros2ntpd");
+	ros::init(argc, argv, "ntpd_shm");
 	ros::NodeHandle nh("~");
 	ros::Subscriber time_ref_sub;
 	int shm_unit;

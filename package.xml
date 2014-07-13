@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>ros2ntpd</name>
+  <name>ntpd_driver</name>
   <version>1.0.0</version>
-  <description>ros2ntpd sends TimeReference message time to ntpd server</description>
+  <description>ntpd_driver sends TimeReference message time to ntpd server</description>
 
   <maintainer email="vooon341@gmail.com">Vladimir Ermakov</maintainer>
   <author email="vooon341@gmail.com">Vladimir Ermakov</author>
@@ -11,8 +11,9 @@
 
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
-  <!-- <url type="website">http://wiki.ros.org/ros2ntpd</url> -->
-
+  <url type="website">http://wiki.ros.org/ntpd_driver</url>
+  <url type="repository">https://github.com/vooon/ntpd_driver.git</url>
+  <url type="bugtracker">https://github.com/vooon/ntpd_driver/issues</url>
 
   <!-- The *_depend tags are used to specify dependencies -->
   <!-- Dependencies can be catkin packages or system dependencies -->

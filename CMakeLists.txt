@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ros2ntpd)
+project(ntpd_driver)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -8,13 +8,6 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   message_runtime
   roscpp
-  sensor_msgs
-)
-
-
-## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
   sensor_msgs
 )
 
@@ -43,10 +36,10 @@ include_directories(
 )
 
 ## Declare a cpp executable
-add_executable(ros2ntpd src/ros2ntpd.cpp)
+add_executable(shm_driver src/shm_driver.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(ros2ntpd
+target_link_libraries(shm_driver
   ${catkin_LIBRARIES}
 )
 
@@ -58,7 +51,7 @@ target_link_libraries(ros2ntpd
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ros2ntpd
+install(TARGETS shm_driver
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
