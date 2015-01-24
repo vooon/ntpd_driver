@@ -2,6 +2,12 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2 (2015-01-24)
+------------------
+* Add example launch script.
+* Add rosindex metadata.
+* Contributors: Vladimir Ermakov
+
 1.0.1 (2014-07-13)
 ------------------
 * Rename package from ros2ntpd to ntpd_driver
