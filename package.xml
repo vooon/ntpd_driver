@@ -28,5 +28,23 @@
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
+    <rosindex>
+      <tags>
+        <tag>ntp</tag>
+        <tag>time</tag>
+        <tag>ntpd</tag>
+        <tag>chrony</tag>
+      </tags>
+      <nodes>
+        <node>
+          <name>shm_driver</name>
+          <description>This node sends time via SHM interface.</description>
+          <ros_api>
+            <sub name="~/time_ref" type="sensor_msgs/TimeReference">Time source topic.</sub>
+            <param name="~/shm_unit" type="int">SHM Unit (must be same as in ntp server config).</param>
+          </ros_api>
+        </node>
+      </nodes>
+    </rosindex>
   </export>
 </package>
