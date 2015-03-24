@@ -10,7 +10,6 @@
  * Based on ntpshm.c from gpsd. 
  */
 
-
 #include <ros/ros.h>
 #include <ros/console.h>
 
@@ -77,8 +76,7 @@ static volatile struct shmTime *get_shmTime(int unit)
 		return NULL;
 	}
 
-	ROS_INFO("SHM(%d) key 0x%08lx, successfully opened",
-			unit, NTPD_SHM_BASE + unit);
+	ROS_INFO("SHM(%d) key 0x%08lx, successfully opened", unit, NTPD_SHM_BASE + unit);
 	return (volatile struct shmTime*) p;
 }
 
@@ -130,9 +128,9 @@ static void time_ref_cb(const sensor_msgs::TimeReference::ConstPtr &time_ref)
 	g_shm->count += 1;
 	g_shm->valid = 1;
 
-	ROS_DEBUG_THROTTLE(10, "Got time_ref: %lu.%09lu",
-			(long unsigned) time_ref->time_ref.sec,
-			(long unsigned) time_ref->time_ref.nsec);
+	ROS_DEBUG_THROTTLE(10, "Got time_ref: %lu.%09lu", 
+	    (long unsigned) time_ref->time_ref.sec, 
+	    (long unsigned) time_ref->time_ref.nsec);
 }
 
 int main(int argc, char *argv[])
@@ -150,10 +148,7 @@ int main(int argc, char *argv[])
 	if (g_shm == NULL)
 		return 1;
 
-	time_ref_sub = nh.subscribe("time_ref", 10, time_ref_cb,
-			ros::TransportHints()
-				.unreliable()
-				.maxDatagramSize(1024));
+	time_ref_sub = nh.subscribe("time_ref", 10, time_ref_cb);
 
 	ros::spin();
 	put_shmTime(&g_shm);
