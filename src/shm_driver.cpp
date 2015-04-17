@@ -7,7 +7,7 @@
  * @license BSD
  *
  * Copyright 2014 Vladimir Ermakov.
- * Based on ntpshm.c from gpsd. 
+ * Based on ntpshm.c from gpsd.
  */
 
 #include <ros/ros.h>
@@ -26,13 +26,13 @@
 struct shmTime
 {
   int mode; /* 0 - if valid set
-       *       use values,
-       *       clear valid
-       * 1 - if valid set
-       *       if count before and after read of values is equal,
-       *         use values
-       *       clear valid
-       */
+             *       use values,
+             *       clear valid
+             * 1 - if valid set
+             *       if count before and after read of values is equal,
+             *         use values
+             *       clear valid
+             */
   volatile int count;
   time_t clockTimeStampSec;
   int clockTimeStampUSec;
@@ -128,32 +128,33 @@ static void time_ref_cb(const sensor_msgs::TimeReference::ConstPtr &time_ref)
   g_shm->count += 1;
   g_shm->valid = 1;
 
-  ROS_DEBUG_THROTTLE(10, "Got time_ref: %lu.%09lu", 
-      (long unsigned) time_ref->time_ref.sec, 
+  ROS_DEBUG_THROTTLE(10, "Got time_ref: %lu.%09lu",
+      (long unsigned) time_ref->time_ref.sec,
       (long unsigned) time_ref->time_ref.nsec);
 }
 
 int main(int argc, char *argv[])
 {
   ros::init(argc, argv, "ntpd_shm");
+
   ros::NodeHandle nh("~");
   ros::Subscriber time_ref_sub;
 
   int shm_unit;
-  std::string time_ref;
+  std::string time_ref_topic;
 
   // Override default ROS handler
   signal(SIGINT, sig_handler);
 
   // Read Parameters
   nh.param("shm_unit", shm_unit, 2);
-  nh.param<std::string>("time_ref", time_ref, "time_ref");
+  nh.param<std::string>("time_ref_topic", time_ref_topic, "time_ref");
 
   g_shm = get_shmTime(shm_unit);
   if (g_shm == NULL)
     return 1;
 
-  time_ref_sub = nh.subscribe(time_ref, 10, time_ref_cb);
+  time_ref_sub = nh.subscribe(time_ref_topic, 10, time_ref_cb);
 
   ros::spin();
   put_shmTime(&g_shm);

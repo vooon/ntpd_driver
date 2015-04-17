@@ -4,7 +4,8 @@ ntpd\_driver
 This ROS node listen `sensor_msgs/TimeReference` and send it to ntpd via SHM (like gpsd).
 
 Parameter `~/shm_unit` define SHM unit (in ntp.conf) (int, default: 2).
-Parameter `~/time_ref` define the topic to subscribe to (string, default: "~/time_ref").
+Parameter `~/time_ref_topic` define the topic to subscribe to (string, default: `"~/time_ref"`).
+
 
 System configuration
 --------------------
@@ -21,7 +22,7 @@ And then restart ntp service.
 
 Run example:
 
-    rosrun ntpd_driver shm_driver _shm_unit:=2 _time_ref:=/mavros/time_reference
+    rosrun ntpd_driver shm_driver _shm_unit:=2 _time_ref_topic:=/mavros/time_reference
 
 ### chrony configuration
 
@@ -34,5 +35,5 @@ And then restart chrony service.
 
 Run example:
 
-    rosrun ntpd_driver shm_driver _shm_unit:=0 _time_ref:=/mavros/time_reference
+    rosrun ntpd_driver shm_driver _shm_unit:=0 _time_ref_topic:=/mavros/time_reference
 
