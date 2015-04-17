@@ -2,6 +2,18 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.0 (2015-04-17)
+------------------
+* Update package.xml for REP 140
+* Change topic param name to `~/time_ref_topic`
+* Merge pull request `#1 <https://github.com/vooon/ntpd_driver/issues/1>`_ from oceansystemslab/master
+  Updated Driver
+* Updated README with new node input parameter
+* fixed indentation according to ROS guidelines and added input parameter for time reference topic
+* Removed transport hints to allow the driver to work with the nmea_serial_driver Python publisher and added ROS style indentation.
+* Updated .gitignore with C++ version on GitHub
+* Contributors: Valerio De Carolis, Vladimir Ermakov
+
 1.0.2 (2015-01-24)
 ------------------
 * Add example launch script.
