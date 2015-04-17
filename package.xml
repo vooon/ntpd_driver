@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>ntpd_driver</name>
   <version>1.0.2</version>
   <description>ntpd_driver sends TimeReference message time to ntpd server</description>
@@ -9,21 +9,16 @@
 
   <license>BSD</license>
 
-  <!-- Url tags are optional, but mutiple are allowed, one per tag -->
-  <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <url type="website">http://wiki.ros.org/ntpd_driver</url>
   <url type="repository">https://github.com/vooon/ntpd_driver.git</url>
   <url type="bugtracker">https://github.com/vooon/ntpd_driver/issues</url>
 
-  <!-- The *_depend tags are used to specify dependencies -->
-  <!-- Dependencies can be catkin packages or system dependencies -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>sensor_msgs</run_depend>
+
+  <depend>message_generation</depend>
+  <depend>message_runtime</depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
@@ -40,8 +35,9 @@
           <name>shm_driver</name>
           <description>This node sends time via SHM interface.</description>
           <ros_api>
-            <sub name="~/time_ref" type="sensor_msgs/TimeReference">Time source topic.</sub>
-            <param name="~/shm_unit" type="int">SHM Unit (must be same as in ntp server config).</param>
+            <sub name="~/time_ref" type="sensor_msgs/TimeReference">Time source topic. (default topic name)</sub>
+            <param name="~/shm_unit" type="int" default="2">SHM Unit (must be same as in ntp server config).</param>
+            <param name="~/time_ref_topic" type="string" default="time_ref">Topic name (may be used instead of remap).</param>
           </ros_api>
         </node>
       </nodes>
