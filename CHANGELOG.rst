@@ -2,6 +2,13 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Syncronize shm write with gpsd/ntpshmwrite.c
+* Add fixup_date parameter.
+  Now driver can setup system date.
+* Contributors: Vladimir Ermakov
+
 1.1.0 (2015-04-17)
 ------------------
 * Update package.xml for REP 140
