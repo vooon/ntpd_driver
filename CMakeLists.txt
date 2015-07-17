@@ -9,7 +9,10 @@ find_package(catkin REQUIRED COMPONENTS
   message_runtime
   roscpp
   sensor_msgs
+  cmake_modules
 )
+
+find_package(Poco REQUIRED COMPONENTS Foundation)
 
 ###################################
 ## catkin specific configuration ##
@@ -22,6 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   CATKIN_DEPENDS sensor_msgs
+  DEPENDS Poco
 )
 
 ###########
@@ -33,6 +37,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${Poco_INCLUDE_DIRS}
 )
 
 ## Declare a cpp executable
@@ -41,6 +46,7 @@ add_executable(shm_driver src/shm_driver.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(shm_driver
   ${catkin_LIBRARIES}
+  ${Poco_LIBRARIES}
 )
 
 #############

@@ -19,6 +19,8 @@
   <depend>message_runtime</depend>
   <depend>roscpp</depend>
   <depend>sensor_msgs</depend>
+  <depend>cmake_modules</depend>
+  <depend>libpoco-dev</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
@@ -38,6 +40,7 @@
             <sub name="~/time_ref" type="sensor_msgs/TimeReference">Time source topic. (default topic name)</sub>
             <param name="~/shm_unit" type="int" default="2">SHM Unit (must be same as in ntp server config).</param>
             <param name="~/time_ref_topic" type="string" default="time_ref">Topic name (may be used instead of remap).</param>
+            <param name="~/fixup_date" type="bool" default="false">Enable date fixup.</param>
           </ros_api>
         </node>
       </nodes>

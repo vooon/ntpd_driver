@@ -8,6 +8,8 @@
  *
  * Copyright 2014 Vladimir Ermakov.
  * Based on ntpshm.c from gpsd.
+ *
+ * @file
  */
 
 #include <ros/ros.h>
@@ -21,6 +23,14 @@
 #include <signal.h>
 #include <cstring>
 #include <cerrno>
+
+// there may be another library, but Poco already used by class_loader,
+// so it definetly exist in your system.
+#include <Poco/Process.h>
+#include <Poco/Pipe.h>
+#include <Poco/PipeStream.h>
+#include <Poco/Format.h>
+#include <Poco/StreamCopier.h>
 
 /** the definition of shmTime is from ntpd source ntpd/refclock_shm.c */
 struct shmTime
@@ -95,6 +105,7 @@ static void put_shmTime(volatile struct shmTime **shm)
 
 /** global SHM time handle */
 volatile struct shmTime *g_shm = NULL;
+static bool g_set_date = false;
 
 static void sig_handler(int sig)
 {
@@ -131,6 +142,48 @@ static void time_ref_cb(const sensor_msgs::TimeReference::ConstPtr &time_ref)
   ROS_DEBUG_THROTTLE(10, "Got time_ref: %lu.%09lu",
       (long unsigned) time_ref->time_ref.sec,
       (long unsigned) time_ref->time_ref.nsec);
+
+  /* It is a hack for rtc-less system like Raspberry Pi
+   * We check that system time is unset (less than some magick)
+   * and set time.
+   *
+   * Sudo configuration required for that feature
+   * date -d @1234567890: Sat Feb 14 02:31:30 MSK 2009
+   */
+  if (g_set_date && ros::Time::now().sec < 1234567890ULL) {
+
+    const double stamp = time_ref->time_ref.toSec();
+
+    ROS_INFO("Setting system date to: %f", stamp);
+
+    // construct commad: sudo -n date -u -s @1234567890.000
+    Poco::Pipe outp, errp;
+    Poco::Process::Args args;
+    args.push_back("-n");
+    args.push_back("date");
+    args.push_back("-u");
+    args.push_back("-s");
+    args.push_back(Poco::format("@%f", stamp));
+    Poco::ProcessHandle ph = Poco::Process::launch("sudo", args, 0, &outp, &errp);
+
+    int rc = ph.wait();
+    Poco::PipeInputStream outs(outp), errs(errp);
+    std::string out, err;
+
+    Poco::StreamCopier::copyToString(outs, out, 4096);
+    Poco::StreamCopier::copyToString(errs, err, 4096);
+
+    if (rc == 0) {
+      ROS_INFO("The system date is set.");
+      ROS_DEBUG_STREAM("OUT: " << out);
+      ROS_DEBUG_STREAM("ERR: " << err);
+    }
+    else {
+      ROS_ERROR("Setting system date failed.");
+      ROS_ERROR_STREAM("OUT: " << out);
+      ROS_ERROR_STREAM("ERR: " << err);
+    }
+  }
 }
 
 int main(int argc, char *argv[])
@@ -148,6 +201,7 @@ int main(int argc, char *argv[])
 
   // Read Parameters
   nh.param("shm_unit", shm_unit, 2);
+  nh.param("fixup_date", g_set_date, false);
   nh.param<std::string>("time_ref_topic", time_ref_topic, "time_ref");
 
   g_shm = get_shmTime(shm_unit);
