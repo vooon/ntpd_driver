@@ -113,6 +113,17 @@ static void sig_handler(int sig)
   ros::shutdown();
 }
 
+/**
+ * Memory barrier. unfortunatly we can't use C stdatomic.h
+ * So only one option: asm magick
+ *
+ * from gpsd compiler.h
+ */
+static inline void memory_barrier(void)
+{
+	asm volatile ("" : : : "memory");
+}
+
 static void time_ref_cb(const sensor_msgs::TimeReference::ConstPtr &time_ref)
 {
   if (g_shm == NULL) {
@@ -122,24 +133,27 @@ static void time_ref_cb(const sensor_msgs::TimeReference::ConstPtr &time_ref)
 
   /* header */
   g_shm->mode = 1;
-  g_shm->leap = 0;        // LEAP_NOWARNING
-  g_shm->precision = -1;  // initially 0.5 sec
   g_shm->nsamples = 3;    // stages of median filter
 
-  /* ntpshm.c recommends add barrier before inc count */
   g_shm->valid = 0;
   g_shm->count += 1;
-  g_shm->receiveTimeStampSec = time_ref->header.stamp.sec;
-  g_shm->receiveTimeStampUSec = time_ref->header.stamp.nsec / 1000;
-  g_shm->receiveTimeStampNSec = time_ref->header.stamp.nsec;
+  /* barrier */
+  memory_barrier();
   g_shm->clockTimeStampSec = time_ref->time_ref.sec;
   g_shm->clockTimeStampUSec = time_ref->time_ref.nsec / 1000;
   g_shm->clockTimeStampNSec = time_ref->time_ref.nsec;
+  g_shm->receiveTimeStampSec = time_ref->header.stamp.sec;
+  g_shm->receiveTimeStampUSec = time_ref->header.stamp.nsec / 1000;
+  g_shm->receiveTimeStampNSec = time_ref->header.stamp.nsec;
+  g_shm->leap = 0;        // LEAP_NOWARNING
+  g_shm->precision = -1;  // initially 0.5 sec
+  memory_barrier();
   /* barrier again */
   g_shm->count += 1;
   g_shm->valid = 1;
 
-  ROS_DEBUG_THROTTLE(10, "Got time_ref: %lu.%09lu",
+  ROS_DEBUG_THROTTLE(10, "Got time_ref: %s: %lu.%09lu",
+      time_ref->source.c_str(),
       (long unsigned) time_ref->time_ref.sec,
       (long unsigned) time_ref->time_ref.nsec);
 
@@ -203,6 +217,10 @@ int main(int argc, char *argv[])
   nh.param("shm_unit", shm_unit, 2);
   nh.param("fixup_date", g_set_date, false);
   nh.param<std::string>("time_ref_topic", time_ref_topic, "time_ref");
+
+  // Report settings
+  ROS_INFO_STREAM("NTP time source: " << ros::names::resolve(time_ref_topic, true));
+  ROS_INFO_STREAM("NTP date fixup: " << ((g_set_date) ? "enabled" : "disabled"));
 
   g_shm = get_shmTime(shm_unit);
   if (g_shm == NULL)
