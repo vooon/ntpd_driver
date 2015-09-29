@@ -226,7 +226,11 @@ int main(int argc, char *argv[])
   if (g_shm == NULL)
     return 1;
 
-  time_ref_sub = nh.subscribe(time_ref_topic, 10, time_ref_cb);
+  // prefer to unreliable connection, but accept tcp too.
+  time_ref_sub = nh.subscribe(time_ref_topic, 10, time_ref_cb,
+      ros::TransportHints()
+      .unreliable().maxDatagramSize(1024)
+      .reliable().tcpNoDelay(true));
 
   ros::spin();
   put_shmTime(&g_shm);
