@@ -2,6 +2,11 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* `#2 <https://github.com/vooon/ntpd_driver/issues/2>`_: allow both UDPROS and TCPROS
+* Contributors: Vladimir Ermakov
+
 1.1.1 (2015-07-18)
 ------------------
 * Syncronize shm write with gpsd/ntpshmwrite.c
