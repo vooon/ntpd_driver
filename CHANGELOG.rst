@@ -2,6 +2,16 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update launch
+* read parameters
+* subscribe to time_ref topic, remove log THROTTLE - segfaults
+* open shm
+* make it buildable, todo: subscribe, open shm
+* update cmake to use ament
+* Contributors: Vladimir Ermakov
+
 1.2.0 (2015-10-02)
 ------------------
 * `#2 <https://github.com/vooon/ntpd_driver/issues/2>`_: allow both UDPROS and TCPROS
