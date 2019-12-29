@@ -1,0 +1,15 @@
+<launch>
+    <!-- vim: ft=xml : -->
+    <!-- example node launch file-->
+
+    <arg name="shm_unit" default="2" />
+    <arg name="fixup_date" default="false" />
+    <arg name="time_ref" default="time_ref" />
+
+    <node pkg="ntpd_driver" exec="shm_driver" name="ntpd_shm" output="screen">
+        <param name="shm_unit" value="$(var shm_unit)" />
+        <param name="fixup_date" value="$(var fixup_date)" />
+        <!-- <param name="time_ref_topic" value="$(var time_ref)" /> -->
+        <remap from="time_ref" to="$(var time_ref)" />
+    </node>
+</launch>

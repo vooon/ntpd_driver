@@ -52,10 +52,9 @@ install(TARGETS shm_driver ntpddriver
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
-## Mark other files for installation (e.g. launch and bag files, etc.)
-#install(DIRECTORY launch/
-#  DESTINATION shared/${PROJECT_NAME}
-#)
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
