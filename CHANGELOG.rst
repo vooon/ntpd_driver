@@ -2,8 +2,8 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2019-12-29)
+------------------
 * update launch
 * read parameters
 * subscribe to time_ref topic, remove log THROTTLE - segfaults
