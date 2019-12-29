@@ -47,12 +47,14 @@ target_link_libraries(shm_driver ntpddriver)
 
 install(TARGETS shm_driver ntpddriver
   EXPORT export_${PROJECT_NAME}
-  DESTINATION lib/${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 #install(DIRECTORY launch/
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+#  DESTINATION shared/${PROJECT_NAME}
 #)
 
 if(BUILD_TESTING)

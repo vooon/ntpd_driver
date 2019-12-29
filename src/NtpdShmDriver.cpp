@@ -32,17 +32,24 @@ NtpdShmDriver::NtpdShmDriver() :
   fixup_date_(false),
   time_ref_topic("time_ref")
 {
-
   // Open SHM, use Deleter to release SHM
   shm_ = std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT*)>>(
       attach_shmTime(shm_unit_),
       std::bind(&NtpdShmDriver::detach_shmTime, this, std::placeholders::_1)
+      );
+
+
+  time_ref_sub_ = this->create_subscription<sensor_msgs::msg::TimeReference>(
+      time_ref_topic, rclcpp::SensorDataQoS(),
+      std::bind(&NtpdShmDriver::time_ref_cb, this, std::placeholders::_1)
       );
 }
 
 void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr msg)
 {
   auto lg = this->get_logger();
+  auto clock = this->get_clock();
+
   const auto &time_ref = msg->time_ref;
   const auto &stamp = msg->header.stamp;
 
@@ -72,26 +79,28 @@ void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr
   shm_->count += 1;
   shm_->valid = 1;
 
-#if 0
-  RCLCPP_DEBUG_THROTTLE(lg, RCUTILS_STEADY_TIME, 10, "Got time_ref: %s: %lu.%09lu",
-      time_ref->source.c_str(),
-      (long unsigned) time_ref->time_ref.sec,
-      (long unsigned) time_ref->time_ref.nanosec);
-#endif
+  RCLCPP_DEBUG(lg, "Got time_ref: %s: %lu.%09lu",
+      msg->source.c_str(),
+      (long unsigned) time_ref.sec,
+      (long unsigned) time_ref.nanosec);
 
   /* It is a hack for rtc-less system like Raspberry Pi
    * We check that system time is unset (less than some magic value)
    * and set time.
    *
-   * Sudo configuration required for that feature
    * date -d @1234567890: Sat Feb 14 02:31:30 MSK 2009
    */
-  if (fixup_date_ && /*ros::Time::now().sec*/0 < 1234567890ULL) {
+  const rclcpp::Time magic_date(1234567890ULL, 0);
+  if (fixup_date_ && clock->now() < magic_date) {
     rclcpp::Time time_ref_(time_ref);
     set_system_time(time_ref_.seconds());
   }
 }
 
+/** Sets system time by calling `sudo date`
+ *
+ * Sudo configuration required for that feature
+ */
 void NtpdShmDriver::set_system_time(const double seconds)
 {
   auto lg= this->get_logger();
@@ -131,7 +140,7 @@ void NtpdShmDriver::set_system_time(const double seconds)
 
 /** Map SHM page
  *
- * NOTE: this function did not create SHM like gpsd/ntpshm.c
+ * NOTE: this function does not create SHM like gpsd/ntpshm.c
  */
 ShmTimeT* NtpdShmDriver::attach_shmTime(int unit)
 {
@@ -160,6 +169,9 @@ ShmTimeT* NtpdShmDriver::attach_shmTime(int unit)
   return static_cast<ShmTimeT*>(p);
 }
 
+/** Release SHM page
+ *
+ */
 void NtpdShmDriver::detach_shmTime(ShmTimeT* shm)
 {
   auto lg = this->get_logger();
