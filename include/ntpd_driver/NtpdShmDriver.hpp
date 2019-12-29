@@ -61,9 +61,9 @@ class NtpdShmDriver : public rclcpp::Node
   private:
     rclcpp::Subscription<sensor_msgs::msg::TimeReference>::SharedPtr time_ref_sub_;
 
-    int shm_unit_;
-    bool fixup_date_;
-    std::string time_ref_topic;
+    rclcpp::Parameter shm_unit_;
+    rclcpp::Parameter fixup_date_;
+    rclcpp::Parameter time_ref_topic_;
 
     std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT*)>> shm_;
 

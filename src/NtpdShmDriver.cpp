@@ -28,19 +28,26 @@ static inline void memory_barrier(void)
 
 NtpdShmDriver::NtpdShmDriver() :
   Node("shm_driver"),
-  shm_unit_(2),
-  fixup_date_(false),
-  time_ref_topic("time_ref")
+  shm_unit_("shm_unit", 2),
+  fixup_date_("fixup_date", false),
+  time_ref_topic_("time_ref_topic", "time_ref")
 {
+  this->declare_parameter("shm_unit", shm_unit_.get_parameter_value());
+  this->declare_parameter("fixup_date", fixup_date_.get_parameter_value());
+  this->declare_parameter("time_ref_topic", time_ref_topic_.get_parameter_value());
+
+  this->get_parameter("shm_unit", shm_unit_);
+  this->get_parameter("fixup_date", fixup_date_);
+  this->get_parameter("time_ref_topic", time_ref_topic_);
+
   // Open SHM, use Deleter to release SHM
   shm_ = std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT*)>>(
-      attach_shmTime(shm_unit_),
+      attach_shmTime(shm_unit_.as_int()),
       std::bind(&NtpdShmDriver::detach_shmTime, this, std::placeholders::_1)
       );
 
-
   time_ref_sub_ = this->create_subscription<sensor_msgs::msg::TimeReference>(
-      time_ref_topic, rclcpp::SensorDataQoS(),
+      time_ref_topic_.as_string(), rclcpp::SensorDataQoS(),
       std::bind(&NtpdShmDriver::time_ref_cb, this, std::placeholders::_1)
       );
 }
@@ -91,7 +98,7 @@ void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr
    * date -d @1234567890: Sat Feb 14 02:31:30 MSK 2009
    */
   const rclcpp::Time magic_date(1234567890ULL, 0);
-  if (fixup_date_ && clock->now() < magic_date) {
+  if (fixup_date_.as_bool() && clock->now() < magic_date) {
     rclcpp::Time time_ref_(time_ref);
     set_system_time(time_ref_.seconds());
   }
