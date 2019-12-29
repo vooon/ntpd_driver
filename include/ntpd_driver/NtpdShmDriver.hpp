@@ -53,10 +53,10 @@ const long int NTPD_SHM_BASE = 0x4e545030;
 using ShmTimeT = volatile struct shmTime;
 
 
-class ShmDriver : public rclcpp::Node
+class NtpdShmDriver : public rclcpp::Node
 {
   public:
-    ShmDriver();
+    NtpdShmDriver();
 
   private:
     rclcpp::Subscription<sensor_msgs::msg::TimeReference>::SharedPtr time_ref_sub_;

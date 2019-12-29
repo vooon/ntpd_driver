@@ -32,20 +32,20 @@ include_directories(
   $<INSTALL_INTERFACE:include>
 )
 
-add_library(shmdriver SHARED src/ShmDriver.cpp)
-ament_target_dependencies(shmdriver
+add_library(ntpddriver SHARED src/NtpdShmDriver.cpp)
+ament_target_dependencies(ntpddriver
   rclcpp
   rclcpp_components
   class_loader
   sensor_msgs
 )
-target_link_libraries(shmdriver ${Poco_LIBRARIES})
-rclcpp_components_register_nodes(shmdriver "ShmDriver")
+target_link_libraries(ntpddriver ${Poco_LIBRARIES})
+rclcpp_components_register_nodes(ntpddriver "NtpdShmDriver")
 
-add_executable(shm_driver src/shm_driver.cpp)
-target_link_libraries(shm_driver shmdriver)
+add_executable(shm_driver src/shm_driver_node.cpp)
+target_link_libraries(shm_driver ntpddriver)
 
-install(TARGETS shm_driver
+install(TARGETS shm_driver ntpddriver
   EXPORT export_${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )

@@ -12,12 +12,12 @@
  * @file
  */
 
-#include <ntpd_driver/ShmDriver.hpp>
+#include <ntpd_driver/NtpdShmDriver.hpp>
 
 int main(int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<ShmDriver>());
+  rclcpp::spin(std::make_shared<NtpdShmDriver>());
   rclcpp::shutdown();
   return 0;
 }

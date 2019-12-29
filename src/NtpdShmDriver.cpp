@@ -1,5 +1,5 @@
 
-#include <ntpd_driver/ShmDriver.hpp>
+#include <ntpd_driver/NtpdShmDriver.hpp>
 #include <class_loader/register_macro.hpp>
 
 #include <sys/ipc.h>
@@ -26,7 +26,7 @@ static inline void memory_barrier(void)
   asm volatile ("" : : : "memory");
 }
 
-ShmDriver::ShmDriver() :
+NtpdShmDriver::NtpdShmDriver() :
   Node("shm_driver"),
   shm_unit_(2),
   fixup_date_(false),
@@ -34,11 +34,13 @@ ShmDriver::ShmDriver() :
 {
 
   // Open SHM, use Deleter to release SHM
-  //shm_ = std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT*)>>(attach_shmTime(shm_unit_),
-  //    std::bind(ShmDriver::detach_shmTime, this));
+  shm_ = std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT*)>>(
+      attach_shmTime(shm_unit_),
+      std::bind(&NtpdShmDriver::detach_shmTime, this, std::placeholders::_1)
+      );
 }
 
-void ShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr msg)
+void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr msg)
 {
   auto lg = this->get_logger();
   const auto &time_ref = msg->time_ref;
@@ -90,7 +92,7 @@ void ShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr msg
   }
 }
 
-void ShmDriver::set_system_time(const double seconds)
+void NtpdShmDriver::set_system_time(const double seconds)
 {
   auto lg= this->get_logger();
 
@@ -131,7 +133,7 @@ void ShmDriver::set_system_time(const double seconds)
  *
  * NOTE: this function did not create SHM like gpsd/ntpshm.c
  */
-ShmTimeT* ShmDriver::attach_shmTime(int unit)
+ShmTimeT* NtpdShmDriver::attach_shmTime(int unit)
 {
   auto lg = this->get_logger();
 
@@ -158,7 +160,7 @@ ShmTimeT* ShmDriver::attach_shmTime(int unit)
   return static_cast<ShmTimeT*>(p);
 }
 
-void ShmDriver::detach_shmTime(ShmTimeT* shm)
+void NtpdShmDriver::detach_shmTime(ShmTimeT* shm)
 {
   auto lg = this->get_logger();
 
@@ -170,4 +172,4 @@ void ShmDriver::detach_shmTime(ShmTimeT* shm)
   }
 }
 
-CLASS_LOADER_REGISTER_CLASS(ShmDriver, rclcpp::Node)
+CLASS_LOADER_REGISTER_CLASS(NtpdShmDriver, rclcpp::Node)
