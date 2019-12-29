@@ -2,8 +2,8 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.1 (2019-12-29)
+------------------
 * disable depend on launch_xml, rosdep can't find it
 * Contributors: Vladimir Ermakov
 
