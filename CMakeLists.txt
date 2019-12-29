@@ -20,18 +20,30 @@ find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(class_loader REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
 find_package(Poco REQUIRED COMPONENTS Foundation)
 
-add_executable(shm_driver src/shm_driver.cpp)
-target_include_directories(shm_driver PUBLIC
+include_directories(
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(shm_driver
-  ${Poco_LIBRARIES}
+
+add_library(shmdriver SHARED src/ShmDriver.cpp)
+ament_target_dependencies(shmdriver
+  rclcpp
+  rclcpp_components
+  class_loader
+  sensor_msgs
 )
+target_link_libraries(shmdriver ${Poco_LIBRARIES})
+rclcpp_components_register_nodes(shmdriver "ShmDriver")
+
+add_executable(shm_driver src/shm_driver.cpp)
+target_link_libraries(shm_driver shmdriver)
 
 install(TARGETS shm_driver
   EXPORT export_${PROJECT_NAME}
