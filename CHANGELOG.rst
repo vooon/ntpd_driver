@@ -2,6 +2,14 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* make tests happy
+* license: change formatting to one known by ament_copyright
+* ci: initial import
+* add license file
+* Contributors: Vladimir Ermakov
+
 2.0.1 (2019-12-29)
 ------------------
 * disable depend on launch_xml, rosdep can't find it
