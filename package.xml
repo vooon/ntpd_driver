@@ -6,13 +6,13 @@
   <description>ntpd_driver sends TimeReference message time to ntpd server</description>
 
   <maintainer email="vooon341@gmail.com">Vladimir Ermakov</maintainer>
-  <author email="vooon341@gmail.com">Vladimir Ermakov</author>
-
   <license file="LICENSE">BSD</license>
 
   <url type="website">http://wiki.ros.org/ntpd_driver</url>
   <url type="repository">https://github.com/vooon/ntpd_driver.git</url>
   <url type="bugtracker">https://github.com/vooon/ntpd_driver/issues</url>
+
+  <author email="vooon341@gmail.com">Vladimir Ermakov</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

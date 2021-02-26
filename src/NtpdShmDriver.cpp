@@ -28,35 +28,40 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include <ntpd_driver/NtpdShmDriver.hpp>
-#include <class_loader/register_macro.hpp>
-
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-#include <cstring>
-
 // there may be another library, but Poco already used by class_loader,
 // so it definetly exist in your system.
-#include <Poco/Process.h>
+#include <Poco/Format.h>
 #include <Poco/Pipe.h>
 #include <Poco/PipeStream.h>
-#include <Poco/Format.h>
+#include <Poco/Process.h>
 #include <Poco/StreamCopier.h>
 
+#include <class_loader/register_macro.hpp>
+#include <cstring>
+#include <memory>
+#include <string>
+#include "ntpd_driver/NtpdShmDriver.hpp"
+
+
 /**
- * Memory barrier. unfortunatly we can't use C stdatomic.h
- * So only one option: asm magick
+ * Memory barrier. Unfortunately we can't use C stdatomic.h
+ * So only one option: asm magic
  *
  * from gpsd compiler.h
  */
 static inline void memory_barrier(void)
 {
-  asm volatile ("" : : : "memory");
+  asm volatile (""
+  :
+  :
+  : "memory");
 }
 
-NtpdShmDriver::NtpdShmDriver() :
-  Node("shm_driver"),
+NtpdShmDriver::NtpdShmDriver()
+: Node("shm_driver"),
   shm_unit_("shm_unit", 2),
   fixup_date_("fixup_date", false),
   time_ref_topic_("time_ref_topic", "time_ref")
@@ -70,15 +75,13 @@ NtpdShmDriver::NtpdShmDriver() :
   this->get_parameter("time_ref_topic", time_ref_topic_);
 
   // Open SHM, use Deleter to release SHM
-  shm_ = std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT*)>>(
-      attach_shmTime(shm_unit_.as_int()),
-      std::bind(&NtpdShmDriver::detach_shmTime, this, std::placeholders::_1)
-      );
+  shm_ = std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT *)>>(
+    attach_shmTime(shm_unit_.as_int()),
+    std::bind(&NtpdShmDriver::detach_shmTime, this, std::placeholders::_1));
 
   time_ref_sub_ = this->create_subscription<sensor_msgs::msg::TimeReference>(
-      time_ref_topic_.as_string(), rclcpp::SensorDataQoS(),
-      std::bind(&NtpdShmDriver::time_ref_cb, this, std::placeholders::_1)
-      );
+    time_ref_topic_.as_string(), rclcpp::SensorDataQoS(),
+    std::bind(&NtpdShmDriver::time_ref_cb, this, std::placeholders::_1));
 }
 
 void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr msg)
@@ -86,8 +89,8 @@ void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr
   auto lg = this->get_logger();
   auto clock = this->get_clock();
 
-  const auto &time_ref = msg->time_ref;
-  const auto &stamp = msg->header.stamp;
+  const auto & time_ref = msg->time_ref;
+  const auto & stamp = msg->header.stamp;
 
   if (!shm_) {
     RCLCPP_FATAL(lg, "Got time_ref before shm opens.");
@@ -108,24 +111,25 @@ void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr
   shm_->receiveTimeStampSec = stamp.sec;
   shm_->receiveTimeStampUSec = stamp.nanosec / 1000;
   shm_->receiveTimeStampNSec = stamp.nanosec;
-  shm_->leap = 0;        // LEAP_NOWARNING
-  shm_->precision = -1;  // initially 0.5 sec
+  shm_->leap = 0;          // LEAP_NOWARNING
+  shm_->precision = -1;    // initially 0.5 sec
   memory_barrier();
   /* barrier again */
   shm_->count += 1;
   shm_->valid = 1;
 
-  RCLCPP_DEBUG(lg, "Got time_ref: %s: %lu.%09lu",
-      msg->source.c_str(),
-      (long unsigned) time_ref.sec,
-      (long unsigned) time_ref.nanosec);
+  RCLCPP_DEBUG(
+    lg, "Got time_ref: %s: %lu.%09lu",
+    msg->source.c_str(),
+    int64_t(time_ref.sec),
+    uint32_t(time_ref.nanosec));
 
   /* It is a hack for rtc-less system like Raspberry Pi
-   * We check that system time is unset (less than some magic value)
-   * and set time.
-   *
-   * date -d @1234567890: Sat Feb 14 02:31:30 MSK 2009
-   */
+ * We check that system time is unset (less than some magic value)
+ * and set time.
+ *
+ * date -d @1234567890: Sat Feb 14 02:31:30 MSK 2009
+ */
   const rclcpp::Time magic_date(1234567890ULL, 0);
   if (fixup_date_.as_bool() && clock->now() < magic_date) {
     rclcpp::Time time_ref_(time_ref);
@@ -139,7 +143,7 @@ void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr
  */
 void NtpdShmDriver::set_system_time(const double seconds)
 {
-  auto lg= this->get_logger();
+  auto lg = this->get_logger();
 
   RCLCPP_INFO(lg, "Setting system date to: %f", seconds);
 
@@ -166,8 +170,7 @@ void NtpdShmDriver::set_system_time(const double seconds)
     RCLCPP_INFO(lg, "The system date is set.");
     RCLCPP_DEBUG_STREAM(lg, "OUT: " << out);
     RCLCPP_DEBUG_STREAM(lg, "ERR: " << err);
-  }
-  else {
+  } else {
     RCLCPP_ERROR(lg, "Setting system date failed.");
     RCLCPP_ERROR_STREAM(lg, "OUT: " << out);
     RCLCPP_ERROR_STREAM(lg, "ERR: " << err);
@@ -178,7 +181,7 @@ void NtpdShmDriver::set_system_time(const double seconds)
  *
  * NOTE: this function does not create SHM like gpsd/ntpshm.c
  */
-ShmTimeT* NtpdShmDriver::attach_shmTime(int unit)
+ShmTimeT * NtpdShmDriver::attach_shmTime(int unit)
 {
   auto lg = this->get_logger();
 
@@ -188,34 +191,38 @@ ShmTimeT* NtpdShmDriver::attach_shmTime(int unit)
 
   int shmid = shmget(key, sizeof(shmTime), get_flags);
   if (shmid < 0) {
-    RCLCPP_FATAL(lg, "SHM(%d) shmget(0x%08lx, %zd, %o) fail: %s",
-        unit, key, sizeof(shmTime), get_flags, strerror(errno));
+    RCLCPP_FATAL(
+      lg, "SHM(%d) shmget(0x%08lx, %zd, %o) fail: %s",
+      unit, key, sizeof(shmTime), get_flags, strerror(errno));
     return nullptr;
   }
 
   /* TODO: check number of attached progs */
 
-  void *p = shmat(shmid, 0, 0);
-  if (p == (void *) -1) {
+  const void * shmat_fail_ptr = (void *)-1;  // NOLINT
+
+  void * p = shmat(shmid, 0, 0);
+  if (p == shmat_fail_ptr) {
     RCLCPP_FATAL(lg, "SHM(%d) shmat(%d, 0, 0) fail: %s", unit, shmid, strerror(errno));
     return nullptr;
   }
 
   RCLCPP_INFO(lg, "SHM(%d) key 0x%08lx, successfully opened", unit, key);
-  return static_cast<ShmTimeT*>(p);
+  return static_cast<ShmTimeT *>(p);
 }
 
 /** Release SHM page
  *
  */
-void NtpdShmDriver::detach_shmTime(ShmTimeT* shm)
+void NtpdShmDriver::detach_shmTime(ShmTimeT * shm)
 {
   auto lg = this->get_logger();
 
-  if (shm == nullptr)
+  if (shm == nullptr) {
     return;
+  }
 
-  if (shmdt((const void*) shm) == -1) {
+  if (shmdt((const void *)shm) == -1) {
     RCLCPP_FATAL(lg, "SHM shmdt(%p) fail: %s", shm, strerror(errno));
   }
 }

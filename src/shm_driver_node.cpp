@@ -42,9 +42,10 @@
  * @file
  */
 
-#include <ntpd_driver/NtpdShmDriver.hpp>
+#include <memory>
+#include "ntpd_driver/NtpdShmDriver.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<NtpdShmDriver>());
