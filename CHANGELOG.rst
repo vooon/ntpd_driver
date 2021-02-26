@@ -2,8 +2,8 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.2 (2021-02-26)
+------------------
 * make tests happy
 * license: change formatting to one known by ament_copyright
 * ci: initial import
