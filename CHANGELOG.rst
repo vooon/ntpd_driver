@@ -2,8 +2,8 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2021-03-25)
+------------------
 * make linker happy
 * fix loading as a component
 * Contributors: Vladimir Ermakov
