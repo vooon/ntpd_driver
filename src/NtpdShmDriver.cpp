@@ -39,12 +39,13 @@
 #include <Poco/Process.h>
 #include <Poco/StreamCopier.h>
 
-#include <class_loader/register_macro.hpp>
 #include <cstring>
 #include <memory>
 #include <string>
 #include "ntpd_driver/NtpdShmDriver.hpp"
 
+
+using namespace ntpd_driver; // NOLINT
 
 /**
  * Memory barrier. Unfortunately we can't use C stdatomic.h
@@ -60,8 +61,8 @@ static inline void memory_barrier(void)
   : "memory");
 }
 
-NtpdShmDriver::NtpdShmDriver()
-: Node("shm_driver"),
+NtpdShmDriver::NtpdShmDriver(const rclcpp::NodeOptions & options)
+: Node("shm_driver", options),
   shm_unit_("shm_unit", 2),
   fixup_date_("fixup_date", false),
   time_ref_topic_("time_ref_topic", "time_ref")
@@ -125,11 +126,11 @@ void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr
     uint32_t(time_ref.nanosec));
 
   /* It is a hack for rtc-less system like Raspberry Pi
- * We check that system time is unset (less than some magic value)
- * and set time.
- *
- * date -d @1234567890: Sat Feb 14 02:31:30 MSK 2009
- */
+   * We check that system time is unset (less than some magic value)
+   * and set time.
+   *
+   * date -d @1234567890: Sat Feb 14 02:31:30 MSK 2009
+   */
   const rclcpp::Time magic_date(1234567890ULL, 0);
   if (fixup_date_.as_bool() && clock->now() < magic_date) {
     rclcpp::Time time_ref_(time_ref);
@@ -227,4 +228,6 @@ void NtpdShmDriver::detach_shmTime(ShmTimeT * shm)
   }
 }
 
-CLASS_LOADER_REGISTER_CLASS(NtpdShmDriver, rclcpp::Node)
+
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(ntpd_driver::NtpdShmDriver)

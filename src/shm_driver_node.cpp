@@ -48,7 +48,7 @@
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<NtpdShmDriver>());
+  rclcpp::spin(std::make_shared<ntpd_driver::NtpdShmDriver>());
   rclcpp::shutdown();
   return 0;
 }

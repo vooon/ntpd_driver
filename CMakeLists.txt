@@ -22,7 +22,6 @@ find_package(ament_cmake REQUIRED)
 # find_package(<dependency> REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(class_loader REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
 find_package(Poco REQUIRED COMPONENTS Foundation)
@@ -36,11 +35,10 @@ add_library(ntpddriver SHARED src/NtpdShmDriver.cpp)
 ament_target_dependencies(ntpddriver
   rclcpp
   rclcpp_components
-  class_loader
   sensor_msgs
 )
 target_link_libraries(ntpddriver ${Poco_LIBRARIES})
-rclcpp_components_register_nodes(ntpddriver "NtpdShmDriver")
+rclcpp_components_register_nodes(ntpddriver "ntpd_driver::NtpdShmDriver")
 
 add_executable(shm_driver src/shm_driver_node.cpp)
 target_link_libraries(shm_driver ntpddriver)

@@ -41,11 +41,10 @@
  * @file
  */
 
-// fucken ament_cpplint!
+#pragma once
+
 #ifndef NTPD_DRIVER__NTPDSHMDRIVER_HPP_
 #define NTPD_DRIVER__NTPDSHMDRIVER_HPP_
-
-#pragma once
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/time_reference.hpp>
@@ -53,6 +52,9 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+
+namespace ntpd_driver
+{
 
 /** the definition of shmTime is from ntpd source ntpd/refclock_shm.c */
 struct shmTime
@@ -86,7 +88,7 @@ using ShmTimeT = volatile struct shmTime;
 class NtpdShmDriver : public rclcpp::Node
 {
 public:
-  NtpdShmDriver();
+  NtpdShmDriver(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
 
 private:
   rclcpp::Subscription<sensor_msgs::msg::TimeReference>::SharedPtr time_ref_sub_;
@@ -104,5 +106,6 @@ private:
   void detach_shmTime(ShmTimeT * shm);
 };
 
+}  // namespace ntpd_driver
 
 #endif  // NTPD_DRIVER__NTPDSHMDRIVER_HPP_
