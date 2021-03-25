@@ -88,7 +88,7 @@ using ShmTimeT = volatile struct shmTime;
 class NtpdShmDriver : public rclcpp::Node
 {
 public:
-  NtpdShmDriver(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
+  explicit NtpdShmDriver(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
 
 private:
   rclcpp::Subscription<sensor_msgs::msg::TimeReference>::SharedPtr time_ref_sub_;
