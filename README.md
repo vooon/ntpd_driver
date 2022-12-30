@@ -4,7 +4,6 @@ ntpd\_driver
 This ROS node listen `sensor_msgs/TimeReference` and send it to ntpd via SHM (like gpsd).
 
 Parameter `~/shm_unit` define SHM unit (in ntp.conf) (int, default: 2).
-Parameter `~/time_ref_topic` define the topic to subscribe to (string, default: `"~/time_ref"`).
 Parameter `~/fixup_date` enable/disable date fixup (bool, default: false)
 
 
