@@ -1,3 +1,5 @@
+---
+
 name: CI
 
 on: [push, pull_request]
@@ -7,14 +9,15 @@ jobs:
     strategy:
       matrix:
         env:
-          - {ROS_DISTRO: foxy, ROS_REPO: testing}
           - {ROS_DISTRO: foxy, ROS_REPO: main}
+          - {ROS_DISTRO: humble, ROS_REPO: main}
+          - {ROS_DISTRO: rolling, ROS_REPO: main}
     env:
       CCACHE_DIR: /github/home/.ccache
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         with:
           path: "${{ env.CCACHE_DIR }}"
           key: "ccache-${{ matrix.env.ROS_DISTRO }}-${{ matrix.env.ROS_REPO }}"

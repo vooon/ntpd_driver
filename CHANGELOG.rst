@@ -31,6 +31,16 @@ Changelog for package ntpd_driver
 * update cmake to use ament
 * Contributors: Vladimir Ermakov
 
+1.3.0 (2022-12-30)
+------------------
+* ci: return semgrep default rule set
+* ci: update ros-i ci action
+* ci: add industrial CI
+* shm_driver: remove time_ref topic parameter to improve secutiry, please use remap
+  Fixes `#9 <https://github.com/vooon/ntpd_driver/issues/9>`_
+* add license file
+* Contributors: Vladimir Ermakov
+
 1.2.0 (2015-10-02)
 ------------------
 * `#2 <https://github.com/vooon/ntpd_driver/issues/2>`_: allow both UDPROS and TCPROS
