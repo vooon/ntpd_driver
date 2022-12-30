@@ -64,16 +64,13 @@ static inline void memory_barrier(void)
 NtpdShmDriver::NtpdShmDriver(const rclcpp::NodeOptions & options)
 : Node("shm_driver", options),
   shm_unit_("shm_unit", 2),
-  fixup_date_("fixup_date", false),
-  time_ref_topic_("time_ref_topic", "time_ref")
+  fixup_date_("fixup_date", false)
 {
   this->declare_parameter("shm_unit", shm_unit_.get_parameter_value());
   this->declare_parameter("fixup_date", fixup_date_.get_parameter_value());
-  this->declare_parameter("time_ref_topic", time_ref_topic_.get_parameter_value());
 
   this->get_parameter("shm_unit", shm_unit_);
   this->get_parameter("fixup_date", fixup_date_);
-  this->get_parameter("time_ref_topic", time_ref_topic_);
 
   // Open SHM, use Deleter to release SHM
   shm_ = std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT *)>>(
@@ -81,7 +78,7 @@ NtpdShmDriver::NtpdShmDriver(const rclcpp::NodeOptions & options)
     std::bind(&NtpdShmDriver::detach_shmTime, this, std::placeholders::_1));
 
   time_ref_sub_ = this->create_subscription<sensor_msgs::msg::TimeReference>(
-    time_ref_topic_.as_string(), rclcpp::SensorDataQoS(),
+    "time_ref", rclcpp::SensorDataQoS(),
     std::bind(&NtpdShmDriver::time_ref_cb, this, std::placeholders::_1));
 }
 

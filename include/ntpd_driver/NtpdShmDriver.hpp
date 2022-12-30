@@ -95,7 +95,6 @@ private:
 
   rclcpp::Parameter shm_unit_;
   rclcpp::Parameter fixup_date_;
-  rclcpp::Parameter time_ref_topic_;
 
   std::unique_ptr<ShmTimeT, std::function<void(ShmTimeT *)>> shm_;
 
