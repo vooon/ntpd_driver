@@ -46,12 +46,12 @@
 #ifndef NTPD_DRIVER__NTPDSHMDRIVER_HPP_
 #define NTPD_DRIVER__NTPDSHMDRIVER_HPP_
 
-#include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/time_reference.hpp>
-
 #include <chrono>
 #include <functional>
 #include <memory>
+
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/time_reference.hpp>
 
 namespace ntpd_driver
 {
