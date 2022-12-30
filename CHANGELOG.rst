@@ -2,8 +2,8 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.0 (2022-12-30)
+------------------
 * include: fix include warnings, arain
 * fix ament_cpplint warnings
 * node: remove time_ref_topic parameter, port for for `#9 <https://github.com/vooon/ntpd_driver/issues/9>`_
