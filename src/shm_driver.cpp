@@ -208,7 +208,6 @@ int main(int argc, char *argv[])
   ros::Subscriber time_ref_sub;
 
   int shm_unit;
-  std::string time_ref_topic;
 
   // Override default ROS handler
   signal(SIGINT, sig_handler);
@@ -216,10 +215,8 @@ int main(int argc, char *argv[])
   // Read Parameters
   nh.param("shm_unit", shm_unit, 2);
   nh.param("fixup_date", g_set_date, false);
-  nh.param<std::string>("time_ref_topic", time_ref_topic, "time_ref");
 
   // Report settings
-  ROS_INFO_STREAM("NTP time source: " << ros::names::resolve(time_ref_topic, true));
   ROS_INFO_STREAM("NTP date fixup: " << ((g_set_date) ? "enabled" : "disabled"));
 
   g_shm = get_shmTime(shm_unit);
@@ -227,7 +224,7 @@ int main(int argc, char *argv[])
     return 1;
 
   // prefer to unreliable connection, but accept tcp too.
-  time_ref_sub = nh.subscribe(time_ref_topic, 10, time_ref_cb,
+  time_ref_sub = nh.subscribe("time_ref", 10, time_ref_cb,
       ros::TransportHints()
       .unreliable().maxDatagramSize(1024)
       .reliable().tcpNoDelay(true));
