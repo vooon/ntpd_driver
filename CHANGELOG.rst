@@ -2,8 +2,8 @@
 Changelog for package ntpd_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2022-12-30)
+------------------
 * ci: return semgrep default rule set
 * ci: update ros-i ci action
 * ci: add industrial CI
