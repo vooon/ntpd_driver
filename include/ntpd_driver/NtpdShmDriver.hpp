@@ -50,8 +50,8 @@
 #include <functional>
 #include <memory>
 
-#include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/time_reference.hpp>
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/time_reference.hpp"
 
 namespace ntpd_driver
 {
