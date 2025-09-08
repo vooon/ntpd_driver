@@ -7,19 +7,26 @@ on: [push, pull_request]
 jobs:
   industrial_ci:
     strategy:
+      fail-fast: false
       matrix:
         env:
-          - {ROS_DISTRO: foxy, ROS_REPO: main}
+          # - {ROS_DISTRO: foxy, ROS_REPO: testing}
+          # - {ROS_DISTRO: foxy, ROS_REPO: main}
+          # - {ROS_DISTRO: galactic, ROS_REPO: testing}
+          # - {ROS_DISTRO: galactic, ROS_REPO: main}
           - {ROS_DISTRO: humble, ROS_REPO: main}
-          - {ROS_DISTRO: rolling, ROS_REPO: main}
+          # - {ROS_DISTRO: iron, ROS_REPO: main}
+          - {ROS_DISTRO: jazzy, ROS_REPO: main}
+          - {ROS_DISTRO: kilted, ROS_REPO: main}
+          - {ROS_DISTRO: rolling, ROS_REPO: testing}
     env:
       CCACHE_DIR: /github/home/.ccache
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v5
+      - uses: actions/cache@v4
         with:
           path: "${{ env.CCACHE_DIR }}"
           key: "ccache-${{ matrix.env.ROS_DISTRO }}-${{ matrix.env.ROS_REPO }}"
-      - uses: 'ros-industrial/industrial_ci@master'
+      - uses: 'ros-industrial/industrial_ci@master'  # nosemgrep
         env: ${{matrix.env}}
