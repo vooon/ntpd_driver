@@ -117,7 +117,7 @@ void NtpdShmDriver::time_ref_cb(const sensor_msgs::msg::TimeReference::SharedPtr
   shm_->valid = 1;
 
   RCLCPP_DEBUG(
-    lg, "Got time_ref: %s: %lu.%09lu",
+    lg, "Got time_ref: %s: %lu.%09u",
     msg->source.c_str(),
     int64_t(time_ref.sec),
     uint32_t(time_ref.nanosec));
@@ -190,7 +190,7 @@ ShmTimeT * NtpdShmDriver::attach_shmTime(int unit)
   int shmid = shmget(key, sizeof(shmTime), get_flags);
   if (shmid < 0) {
     RCLCPP_FATAL(
-      lg, "SHM(%d) shmget(0x%08lx, %zd, %o) fail: %s",
+      lg, "SHM(%d) shmget(0x%08x, %zd, %o) fail: %s",
       unit, key, sizeof(shmTime), get_flags, strerror(errno));
     return nullptr;
   }
@@ -205,7 +205,7 @@ ShmTimeT * NtpdShmDriver::attach_shmTime(int unit)
     return nullptr;
   }
 
-  RCLCPP_INFO(lg, "SHM(%d) key 0x%08lx, successfully opened", unit, key);
+  RCLCPP_INFO(lg, "SHM(%d) key 0x%08x, successfully opened", unit, key);
   return static_cast<ShmTimeT *>(p);
 }
 
@@ -221,7 +221,7 @@ void NtpdShmDriver::detach_shmTime(ShmTimeT * shm)
   }
 
   if (shmdt((const void *)shm) == -1) {
-    RCLCPP_FATAL(lg, "SHM shmdt(%p) fail: %s", shm, strerror(errno));
+    RCLCPP_FATAL(lg, "SHM shmdt(%p) fail: %s", (const void *)shm, strerror(errno));
   }
 }
 
