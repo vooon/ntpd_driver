@@ -32,12 +32,14 @@ include_directories(
 )
 
 add_library(ntpddriver SHARED src/NtpdShmDriver.cpp)
-ament_target_dependencies(ntpddriver
-  rclcpp
-  rclcpp_components
-  sensor_msgs
+target_link_libraries(ntpddriver PUBLIC
+  ${sensor_msgs_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_components::component
+  rclcpp_components::component_manager
+  sensor_msgs::sensor_msgs_library
+  ${Poco_LIBRARIES}
 )
-target_link_libraries(ntpddriver ${Poco_LIBRARIES})
 rclcpp_components_register_nodes(ntpddriver "ntpd_driver::NtpdShmDriver")
 
 add_executable(shm_driver src/shm_driver_node.cpp)
